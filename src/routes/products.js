@@ -1,5 +1,5 @@
-const express = require("express");
-const fs = require("fs");
+import express from "express";
+import fs from "fs";
 const router = express.Router();
 const path = "./data/products.json";
 
@@ -72,4 +72,5 @@ router.delete("/:pid", (req, res) => {
   res.json({ message: "Producto eliminado" });
 });
 
-module.exports = router;
+
+export default router;

@@ -1,5 +1,5 @@
-const express = require("express");
-const fs = require("fs");
+import express from "express";
+import fs from "fs";
 const router = express.Router();
 const path = "./data/carts.json";
 
@@ -57,4 +57,4 @@ router.post("/:cid/product/:pid", (req, res) => {
   res.json({ message: "Producto agregado al carrito", cart: carts[cartIndex] });
 });
 
-module.exports = router;
+export default router;

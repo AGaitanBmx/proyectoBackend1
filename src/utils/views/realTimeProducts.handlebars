@@ -10,6 +10,8 @@
   <ul id="productList">
     {{#each products}}
       <li>{{this.title}} - {{this.price}} USD</li>
+      <button class="delete-btn" data-id="{{this.id}}">Eliminar</button>
+
     {{/each}}
   </ul>
 

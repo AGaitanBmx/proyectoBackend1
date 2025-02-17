@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { __dirname } from './dirname.js'; // Asegúrate de que funcione
-
+import { __dirname } from './dirname.js';
 export default class ProductManager {
   constructor(filename) {
     this.filePath = path.join(__dirname, '..', 'data', filename);

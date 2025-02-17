@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import handlebars from 'express-handlebars';
 import path from 'path';
-import { __dirname } from './utils/dirname.js'; // Importa __dirname correctamente
+import { __dirname } from './utils/dirname.js';
 import productsRouter from './routes/products.js';
 import cartsRouter from './routes/carts.js';
 import ProductManager from './utils/ProductManager.js';
@@ -23,12 +23,15 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+//app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public'))); 
 
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 
-const productManager = new ProductManager('./productos.json');
+//const productManager = new ProductManager(path.join(__dirname, '..', 'data', 'products.json'));
+
+const productManager = new ProductManager('/products.json');
 
 app.get('/', async (req, res) => {
     const products = await productManager.getProducts();
@@ -47,6 +50,7 @@ io.on('connection', async socket => {
     socket.emit('updateProducts', await productManager.getProducts());
 
     socket.on('newProduct', async product => {
+        console.log(product)
         await productManager.addProduct(product);
         io.emit('updateProducts', await productManager.getProducts()); // Emitir a todos los clientes
     });

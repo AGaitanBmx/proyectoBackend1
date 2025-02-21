@@ -17,6 +17,21 @@ router.get('/:pid', async (req, res) => {
     res.json(product);
 });
 
+router.put('/:pid', async (req, res) => {
+    const id = parseInt(req.params.pid);
+    const updatedData = req.body;
+    const products = await productManager.getProducts();
+    const index = products.findIndex(p => p.id === id);
+
+    if (index !== -1) {
+        products[index] = { ...products[index], ...updatedData };
+        await productManager.writeFile(products);
+        res.json({ message: 'Producto actualizado correctamente' });
+    } else {
+        res.status(404).json({ error: 'Producto no encontrado' });
+    }
+});
+
 
 router.post('/', async (req, res) => {
     await productManager.addProduct(req.body);

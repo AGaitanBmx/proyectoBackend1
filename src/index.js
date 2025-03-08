@@ -6,11 +6,14 @@ import path from 'path';
 import { __dirname } from './utils/dirname.js';
 import productsRouter from './routes/products.js';
 import cartsRouter from './routes/carts.js';
-import ProductManager from './utils/ProductManager.js';
+import ProductService from './utils/ProductService.js';
+import connectDB from './config/db.js';
 
 const app = express();
 const server = createServer(app); // Usamos createServer para Socket.io
 const io = new Server(server);
+
+connectDB();
 
 const hbs = handlebars.create({
     layoutsDir: path.join(__dirname, 'views', 'layouts'),
@@ -31,15 +34,15 @@ app.use('/api/carts', cartsRouter);
 
 //const productManager = new ProductManager(path.join(__dirname, '..', 'data', 'products.json'));
 
-const productManager = new ProductManager('/products.json');
+const products = await ProductService.getProducts();
 
 app.get('/', async (req, res) => {
-    const products = await productManager.getProducts();
+    const products = await ProductService.getProducts();
     res.render('home', { products });
 });
 
 app.get('/realtimeproducts', async (req, res) => {
-    const products = await productManager.getProducts();
+    const products = await ProductService.getProducts();
     res.render('realTimeProducts', { products });
 });
 
@@ -47,17 +50,17 @@ io.on('connection', async socket => {
     console.log('Nuevo cliente conectado');
 
     // Emitir productos iniciales
-    socket.emit('updateProducts', await productManager.getProducts());
+    socket.emit('updateProducts', await ProductService.getProducts());
 
     socket.on('newProduct', async product => {
         console.log(product)
-        await productManager.addProduct(product);
-        io.emit('updateProducts', await productManager.getProducts()); // Emitir a todos los clientes
+        await ProductService.addProduct(product);
+        io.emit('updateProducts', await ProductService.getProducts()); // Emitir a todos los clientes
     });
 
     socket.on('deleteProduct', async id => {
         await productManager.deleteProduct(id);
-        io.emit('updateProducts', await productManager.getProducts()); // Emitir a todos los clientes
+        io.emit('updateProducts', await ProductService.getProducts()); // Emitir a todos los clientes
     });
 
     socket.on('disconnect', () => {

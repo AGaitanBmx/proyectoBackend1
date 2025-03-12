@@ -1,16 +1,34 @@
 import Product from '../models/product.model.js';
 
 class ProductService {
-    async getProducts(query = {}, options = {}) {
-        console.log("🔎 Buscando productos con filtro:", query);
-        console.log("📜 Opciones:", options);
-        
-        const products = await Product.find(query).limit(options.limit).skip(options.skip).sort(options.sort);
+    async getProducts(query = {}, { page = 1, limit = 10, sort = {} } = {}) {
+        try {
+            console.log("🔎 Buscando productos con filtro:", query);
+            console.log("📜 Opciones:", { page, limit, sort });
     
-        console.log("📦 Productos encontrados:", products);
-        return products;
+            const skip = (page - 1) * limit;
+    
+            const products = await Product.find(query)
+                .limit(limit)  // ✅ Usa directamente el parámetro `limit`
+                .skip(skip)    // ✅ Usa `skip` calculado arriba
+                .sort(sort)    // ✅ Usa `sort` directamente
+                .lean();       // 👈 Convierte a objetos simples
+    
+            const total = await Product.countDocuments(query);
+    
+            return {
+                docs: products,
+                totalDocs: total,
+                totalPages: Math.ceil(total / limit),
+                page: Number(page),
+                limit: Number(limit)
+            };
+        } catch (error) {
+            console.error("❌ Error al obtener productos:", error);
+            throw error;
+        }
     }
-
+    
     async getProductById(id) {
         return await Product.findById(id);
     }
@@ -29,7 +47,7 @@ class ProductService {
     }
 
     async countProducts(query = {}) {
-      return await Product.countDocuments(query);
+        return await Product.countDocuments(query);
   }
 }
 

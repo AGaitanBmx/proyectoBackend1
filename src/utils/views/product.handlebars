@@ -1,0 +1,30 @@
+{{!-- Layout Principal --}}
+{{#> main}}
+
+    <h1>Lista de Productos</h1>
+
+    {{!-- Formulario para agregar un nuevo producto --}}
+    <form id="productForm">
+        <input type="text" id="title" placeholder="Título" required>
+        <input type="text" id="description" placeholder="Descripción" required>
+        <input type="number" id="price" placeholder="Precio" required>
+        <input type="text" id="category" placeholder="Categoría" required>
+        <input type="number" id="stock" placeholder="Stock" required>
+        <input type="text" id="thumbnail" placeholder="URL de la Imagen">
+        <button type="submit">Agregar Producto</button>
+    </form>
+
+    {{!-- Lista de productos con opción de eliminar --}}
+    <ul id="productList">
+        {{#each products}}
+            <li>
+                <strong>{{this.title}}</strong> - ${{this.price}}
+                <button class="delete-btn" data-id="{{this._id}}">Eliminar</button>
+            </li>
+        {{/each}}
+    </ul>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/main.js"></script>
+
+{{/main}}

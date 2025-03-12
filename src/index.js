@@ -8,9 +8,10 @@ import productsRouter from './routes/products.js';
 import cartsRouter from './routes/carts.js';
 import ProductService from './utils/ProductService.js';
 import connectDB from './config/db.js';
+import viewsRouter from './routes/views.js';
 
 const app = express();
-const server = createServer(app); // Usamos createServer para Socket.io
+const server = createServer(app);
 const io = new Server(server);
 
 connectDB();
@@ -26,15 +27,11 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-//app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, '..', 'public'))); 
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
+app.use('/', viewsRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
-
-//const productManager = new ProductManager(path.join(__dirname, '..', 'data', 'products.json'));
-
-const products = await ProductService.getProducts();
 
 app.get('/', async (req, res) => {
     const products = await ProductService.getProducts();
@@ -49,18 +46,16 @@ app.get('/realtimeproducts', async (req, res) => {
 io.on('connection', async socket => {
     console.log('Nuevo cliente conectado');
 
-    // Emitir productos iniciales
     socket.emit('updateProducts', await ProductService.getProducts());
 
     socket.on('newProduct', async product => {
-        console.log(product)
         await ProductService.addProduct(product);
-        io.emit('updateProducts', await ProductService.getProducts()); // Emitir a todos los clientes
+        io.emit('updateProducts', await ProductService.getProducts());
     });
 
     socket.on('deleteProduct', async id => {
-        await productManager.deleteProduct(id);
-        io.emit('updateProducts', await ProductService.getProducts()); // Emitir a todos los clientes
+        await ProductService.deleteProduct(id);
+        io.emit('updateProducts', await ProductService.getProducts());
     });
 
     socket.on('disconnect', () => {
@@ -69,6 +64,6 @@ io.on('connection', async socket => {
 });
 
 const PORT = 8080;
-server.listen(PORT, () => { // Usamos server.listen()
+server.listen(PORT, () => {
     console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });

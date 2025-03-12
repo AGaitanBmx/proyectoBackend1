@@ -1,0 +1,19 @@
+{{!-- Layout Principal --}}
+{{#> main}}
+
+    <h1>Carrito de Compras</h1>
+
+    <ul id="cartList">
+        {{#each cart.items}}
+            <li>
+                <strong>{{this.product.title}}</strong> - Cantidad: {{this.quantity}}
+                <button class="remove-btn" data-id="{{this.product._id}}">Eliminar</button>
+            </li>
+        {{/each}}
+    </ul>
+
+    <button id="clearCart">Vaciar Carrito</button>
+
+    <script src="/main.js"></script>
+
+{{/main}}

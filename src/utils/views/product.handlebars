@@ -1,4 +1,3 @@
-{{!-- Layout Principal --}}
 {{#> main}}
 
     <h1>Lista de Productos</h1>
@@ -14,12 +13,13 @@
         <button type="submit">Agregar Producto</button>
     </form>
 
-    {{!-- Lista de productos con opción de eliminar --}}
+    {{!-- Lista de productos con imagen --}}
     <ul id="productList">
         {{#each products}}
-            <li>
+            <li data-id="{{this._id}}">  <img src="{{this.thumbnail}}" alt="Imagen de {{this.title}}" style="width: 100px; height: auto;">
                 <strong>{{this.title}}</strong> - ${{this.price}}
                 <button class="delete-btn" data-id="{{this._id}}">Eliminar</button>
+                <button class="add-to-cart-btn" data-id="{{this._id}}">Agregar al Carrito</button>
             </li>
         {{/each}}
     </ul>

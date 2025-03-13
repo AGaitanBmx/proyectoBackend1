@@ -35,8 +35,9 @@ router.get('/', async (req, res) => {
         console.log("🔧 Opciones de paginación:", options);
 
         const products = await Product.paginate(filter, options);
-
-        console.log("📦 Productos encontrados:", products);
+        
+        //cambio de gemini
+        console.log(" Productos encontrados (raw):", JSON.stringify(products.docs, null, 2));
 
         res.json({
             status: "success",
